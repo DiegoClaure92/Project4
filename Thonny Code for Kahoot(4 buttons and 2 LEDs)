@@ -1,0 +1,118 @@
+from machine import I2C, Pin
+from time import sleep
+from pico_i2c_lcd import I2cLcd
+import network
+import urequests
+import time
+
+button_A = Pin(10, Pin.IN, Pin.PULL_DOWN)
+button_B = Pin(14, Pin.IN, Pin.PULL_DOWN)
+button_C = Pin(15, Pin.IN, Pin.PULL_DOWN)
+button_D = Pin(9, Pin.IN, Pin.PULL_DOWN)
+
+led_YAY = machine.Pin(16, machine.Pin.OUT)
+led_NAY = machine.Pin(17, machine.Pin.OUT)
+
+i2c = I2C(0, sda=Pin(0), scl=Pin(1), freq=400000)
+I2C_ADDR = i2c.scan()[0]
+lcd = I2cLcd(i2c, I2C_ADDR, 2, 16)
+
+# Initialize the network interface
+wlan = network.WLAN(network.STA_IF)
+wlan.active(True)
+
+# Connect to the Wi-Fi network
+ssid = 'FIU_WiFi'
+password = ''  # Add your Wi-Fi password here
+wlan.connect(ssid)
+
+# Wait until connected
+while not wlan.isconnected():
+    print('Connecting...')
+    print(wlan.status())
+    time.sleep(1)
+
+print('Connected, IP address:', wlan.ifconfig()[0])
+
+# URL for the POST request (replace with your server's IP)
+url = "http://10.128.6.190/kahoot.php"
+
+
+
+led_YAY.value(0)
+led_NAY.value(0)
+
+while True:
+    if button_A.value() == 1:
+        data = {"mac": 'A'}
+        form_data = "&".join(f"{key}={value}" for key, value in data.items())
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        response = urequests.post(url, data=form_data, headers=headers)
+        answer = response.text
+        print('Response:', answer)
+        lcd.clear()
+        sleep(0.2)  # Debounce delay
+        if answer == "YAY":
+            led_NAY.value(0)
+            led_YAY.value(1)
+            lcd.putstr(answer)
+        else:
+            led_NAY.value(1)
+            led_YAY.value(0)
+            lcd.putstr(answer)
+    elif button_B.value() == 1:
+        data = {"mac": 'B'}
+        form_data = "&".join(f"{key}={value}" for key, value in data.items())
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        response = urequests.post(url, data=form_data, headers=headers)
+        answer = response.text
+        print('Response:', answer)
+        lcd.clear()
+        sleep(0.2)
+        if answer == "YAY":
+            led_NAY.value(0)
+            led_YAY.value(1)
+            lcd.putstr(answer)
+        else:
+            led_NAY.value(1)
+            led_YAY.value(0)
+            lcd.putstr(answer)
+    elif button_C.value() == 1:
+        data = {"mac": 'C'}
+        form_data = "&".join(f"{key}={value}" for key, value in data.items())
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        response = urequests.post(url, data=form_data, headers=headers)
+        answer = response.text
+        print('Response:', answer)
+        lcd.clear()
+        sleep(0.2)
+        if answer == "YAY":
+            led_NAY.value(0)
+            led_YAY.value(1)
+            lcd.putstr(answer)
+        else:
+            led_NAY.value(1)
+            led_YAY.value(0)
+            lcd.putstr(answer)
+    elif button_D.value() == 1:
+        data = {"mac": 'D'}
+        form_data = "&".join(f"{key}={value}" for key, value in data.items())
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        response = urequests.post(url, data=form_data, headers=headers)
+        answer = response.text
+        print('Response:', answer)
+        lcd.clear()
+        sleep(0.2)
+        if answer == "YAY":
+            led_NAY.value(0)
+            led_YAY.value(1)
+            lcd.putstr(answer)
+        else:
+            led_NAY.value(1)
+            led_YAY.value(0)
+            lcd.putstr(answer)
+    time.sleep(0.1)
+    
+
+
+
