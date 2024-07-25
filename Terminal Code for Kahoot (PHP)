@@ -1,0 +1,38 @@
+<?php
+
+date_default_timezone_set('America/New_York');
+
+switch($_SERVER['REQUEST_METHOD']){
+    case "GET":
+        echo "=D";
+        break;
+
+    case "POST":
+        $timeStamp = time();
+        $arr = [
+            "timestamp" => $timeStamp,
+            "date" => date("D M d Y H:i:s", $timeStamp),
+            "ip" => $_SERVER['REMOTE_ADDR'],
+            "button" => $_POST['mac']  // Change 'CHOICE' to 'button' to match the data sent
+        ];
+
+        $json_str = json_encode($arr)."\n";
+        error_log($json_str, 3, "/var/log/kahoot.log");
+
+        switch($_POST['mac']){
+                        case "A":
+                                        echo "YAY";
+                                break;
+                        case "B":
+                        case "C":
+                        case "D":
+                                        echo "NAY";
+                                break;
+                        default:
+                                        echo "?????";
+                                break;
+
+                break;
+        }
+        break;
+}
